@@ -4,6 +4,7 @@ import tarfile
 import requests
 
 def downloadData(url, savePath):
+    os.makedirs(os.path.dirname(savePath), exist_ok=True)
     print("Downloading starts")
     r = requests.get(url)
     with open(savePath, "wb") as code:

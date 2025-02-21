@@ -12,6 +12,7 @@ os.chdir(script_dir)
 
 class analyzer:
     def __init__(self):
+        self.gzipPath="..\\downloads\\MovieSummaries.tar.gz"
         self.movieMetaDataPath="..\\data\\MovieSummaries\\movie.metadata.tsv"
         self.movieMetaDataColumns=['wikiID', 'fbID', 'movieName', 'releaseDate', 'boxRevenue', 'runtime', 'language', 'country', 'genre']
         self.characterMetaDataPath="..\\data\\MovieSummaries\\character.metadata.tsv"
@@ -42,3 +43,4 @@ class analyzer:
         sns.histplot(data=countData,x="actorCounts",bins=40)
         plt.show()
 
+analyzer()
