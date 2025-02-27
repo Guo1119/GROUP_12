@@ -22,5 +22,5 @@ st.header("Actor Height Distribution")
 gender = st.selectbox("Select Gender", ["All", "Male", "Female"])
 min_height = st.number_input("Min Height", min_value=0.5, max_value=2.5, value=1.0)
 max_height = st.number_input("Max Height", min_value=0.5, max_value=2.5, value=2.5)
-if st.button("Show Distribution"):
+if st.button("Plot Distribution"):
     analyzer.actor_distributions(gender, max_height, min_height, plot=True)
