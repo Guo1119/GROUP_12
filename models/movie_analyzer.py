@@ -5,6 +5,7 @@ import tarfile
 import matplotlib.pyplot as plt
 import ast  # Import for parsing dictionary-like strings
 
+
 class MovieAnalyzer:
     def __init__(self):
         """Initialize the class by checking for dataset and loading it."""
@@ -16,20 +17,49 @@ class MovieAnalyzer:
         self.character_data_file = os.path.join(self.data_dir, "character.metadata.tsv")
 
         # Check if datasets exist; if not, download and extract them
-        if not os.path.exists(self.movie_data_file) or not os.path.exists(self.character_data_file):
+        if not os.path.exists(self.movie_data_file) or not os.path.exists(
+            self.character_data_file
+        ):
             self.download_and_extract()
 
         # Load datasets
-        self.movies_df = pd.read_csv(self.movie_data_file, sep='\t', header=None, names=[
-            "wiki_movie_id", "freebase_movie_id", "movie_name", "release_date", "box_office", "runtime",
-            "languages", "countries", "genres"
-        ])
+        self.movies_df = pd.read_csv(
+            self.movie_data_file,
+            sep="\t",
+            header=None,
+            names=[
+                "wiki_movie_id",
+                "freebase_movie_id",
+                "movie_name",
+                "release_date",
+                "box_office",
+                "runtime",
+                "languages",
+                "countries",
+                "genres",
+            ],
+        )
 
-        self.characters_df = pd.read_csv(self.character_data_file, sep='\t', header=None, names=[
-            "wiki_movie_id", "freebase_movie_id", "release_date", "character_name", "actor_dob",
-            "actor_gender", "actor_height", "actor_ethnicity", "actor_name", "actor_age",
-            "char_actor_map_id", "char_id", "actor_id"
-        ])
+        self.characters_df = pd.read_csv(
+            self.character_data_file,
+            sep="\t",
+            header=None,
+            names=[
+                "wiki_movie_id",
+                "freebase_movie_id",
+                "release_date",
+                "character_name",
+                "actor_dob",
+                "actor_gender",
+                "actor_height",
+                "actor_ethnicity",
+                "actor_name",
+                "actor_age",
+                "char_actor_map_id",
+                "char_id",
+                "actor_id",
+            ],
+        )
 
     def download_and_extract(self):
         """Download dataset if not present and extract it."""
@@ -68,21 +98,34 @@ class MovieAnalyzer:
                 all_genres.extend(genre_dict.values())  # Extract genre names
 
         # Create a DataFrame counting occurrences of each genre
-        genre_counts = pd.DataFrame({"Movie_Type": all_genres}).value_counts().reset_index()
+        genre_counts = (
+            pd.DataFrame({"Movie_Type": all_genres}).value_counts().reset_index()
+        )
         genre_counts.columns = ["Movie_Type", "Count"]
 
         return genre_counts.head(N)
 
     def actor_count(self) -> pd.DataFrame:
         """Returns histogram data of actors per movie."""
-        actor_counts = self.characters_df.groupby("wiki_movie_id").size().value_counts().reset_index()
+        actor_counts = (
+            self.characters_df.groupby("wiki_movie_id")
+            .size()
+            .value_counts()
+            .reset_index()
+        )
         actor_counts.columns = ["Number_of_Actors", "Movie_Count"]
         return actor_counts
 
-    def actor_distributions(self, gender: str = "All", max_height: float = 2.5, min_height: float = 1.0, plot: bool = False) -> pd.DataFrame:
+    def actor_distributions(
+        self,
+        gender: str = "All",
+        max_height: float = 2.5,
+        min_height: float = 1.0,
+        plot: bool = False,
+    ) -> pd.DataFrame:
         """
         Returns actor height distribution and optionally plots it.
-        
+
         :param gender: "All" or specific gender ("Male", "Female", etc.).
         :param max_height: Maximum actor height.
         :param min_height: Minimum actor height.
@@ -95,17 +138,23 @@ class MovieAnalyzer:
         if not isinstance(gender, str):
             raise ValueError("Gender must be a string ('All', 'Male', 'Female', etc.).")
 
-        if not isinstance(max_height, (int, float)) or not isinstance(min_height, (int, float)):
+        if not isinstance(max_height, (int, float)) or not isinstance(
+            min_height, (int, float)
+        ):
             raise ValueError("Height values must be numeric.")
 
         if max_height < min_height:
             raise ValueError("max_height must be greater than min_height.")
 
         # Convert 'M' -> 'Male', 'F' -> 'Female' in the dataset
-        self.characters_df["actor_gender"] = self.characters_df["actor_gender"].replace({'M': 'Male', 'F': 'Female'})
+        self.characters_df["actor_gender"] = self.characters_df["actor_gender"].replace(
+            {"M": "Male", "F": "Female"}
+        )
 
         # Filter dataset based on height
-        df = self.characters_df.dropna(subset=["actor_height"])  # Remove missing heights
+        df = self.characters_df.dropna(
+            subset=["actor_height"]
+        )  # Remove missing heights
         df = df[(df["actor_height"] >= min_height) & (df["actor_height"] <= max_height)]
 
         # Get distinct non-missing gender values
@@ -122,7 +171,13 @@ class MovieAnalyzer:
         # Plot if requested
         if plot:
             plt.figure(figsize=(8, 5))
-            plt.hist(df["actor_height"].dropna(), bins=20, alpha=0.7, color="skyblue", edgecolor="black")
+            plt.hist(
+                df["actor_height"].dropna(),
+                bins=20,
+                alpha=0.7,
+                color="skyblue",
+                edgecolor="black",
+            )
             plt.xlabel("Height (m)")
             plt.ylabel("Frequency")
             plt.title(f"Actor Height Distribution - Gender: {gender}")
@@ -130,6 +185,7 @@ class MovieAnalyzer:
 
             # ✅ Ensure the plot is rendered in Streamlit
             import streamlit as st
+
             st.pyplot(plt)
 
         return df[["actor_name", "actor_gender", "actor_height"]]
