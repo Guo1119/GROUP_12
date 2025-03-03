@@ -2,8 +2,8 @@
 A repository for 24/25 ADPRO's group project (Group 12)
 
 **STUDENTS**:
- - Wale Doura
- - João Filipe Zhou Jin
+ - Wale Doura: 57555@novasbe.pt
+ - João Filipe Zhou Jin: 63631@novasbe.pt
  - Zhanshuo Guo: 64412@novasbe.pt
  - Léon Philipp Klingele: 67163@novasbe.pt
 
@@ -11,4 +11,5 @@ A repository for 24/25 ADPRO's group project (Group 12)
   - By now (2025/3/3), the first part is stored in `development` branch. 
   - Please clone the repository to your end and use command "streamlit run streamlit_app.py" to run the program/website.
   - The actual class file is stored in "models/movie_analyzer.py", which includes three requested methods and one additional method for downloading and extracting used in the initialization.
-  - Use command "pytest test_movie_analyzer.py" to test the error handlings requested in for the class. 
+  - Use command "pytest test_movie_analyzer.py" to test the error handlings requested in for the class.
+  - "analyzer_legacy.py" and "datafetchtools_legacy.py" are legacy files used for building at first.
