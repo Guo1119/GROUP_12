@@ -1,26 +1,13 @@
 import streamlit as st
-import sys
-import os
 
-sys.path.append(os.path.abspath("models"))  # Ensure Python finds the models folder
+def page2():
+    st.title("Second page")
 
-from movie_analyzer import MovieAnalyzer  # Import from models/
+pg = st.navigation({
+    "Movie Analyzer": [
+                        st.Page("page_1.py", title="Distribution Analysis", icon=":material/home:"),
+                        st.Page("page_2.py", title="Chronological Analysis", icon=":material/calendar_month:"),
+                        ]                    
+}, position="sidebar")
 
-
-st.title("Movie Data Analysis")
-
-analyzer = MovieAnalyzer()
-
-st.header("Movie Type Distribution")
-N = st.number_input("Select N", min_value=1, max_value=50, value=10)
-st.bar_chart(analyzer.movie_type(N).set_index("Movie_Type"))
-
-st.header("Actor Count Histogram")
-st.bar_chart(analyzer.actor_count().set_index("Number_of_Actors"))
-
-st.header("Actor Height Distribution")
-gender = st.selectbox("Select Gender", ["All", "Male", "Female"])
-min_height = st.number_input("Min Height", min_value=0.5, max_value=2.5, value=1.0)
-max_height = st.number_input("Max Height", min_value=0.5, max_value=2.5, value=2.5)
-if st.button("Plot Distribution"):
-    analyzer.actor_distributions(gender, max_height, min_height, plot=True)
+pg.run()
