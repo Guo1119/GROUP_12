@@ -1,4 +1,5 @@
 import os
+import datetime as dt
 import pandas as pd
 import requests
 import tarfile
@@ -37,6 +38,32 @@ class MovieAnalyzer:
         Return an actor data in pandas.DataFrame under 3 given conditions or plot the distribution of filtered actorData.
     """
 
+    @staticmethod
+    def parse_genres(x):
+        """Convert stringified dictionaries into real Python dicts (handle errors safely)"""
+        try:
+            return ast.literal_eval(x) if isinstance(x, str) else {}
+        except (SyntaxError, ValueError):
+            return {}
+
+    @staticmethod    
+    def download_and_extract():
+        """Download dataset if not present and extract it."""
+        url = "http://www.cs.cmu.edu/~ark/personas/data/MovieSummaries.tar.gz"
+        tar_path = os.path.join("data", "MovieSummaries.tar.gz")
+
+        if not os.path.exists(tar_path):
+            print("Downloading dataset...")
+            response = requests.get(url, stream=True)
+            with open(tar_path, "wb") as file:
+                for chunk in response.iter_content(chunk_size=1024):
+                    file.write(chunk)
+
+        print("Extracting dataset...")
+        with tarfile.open(tar_path, "r:gz") as tar:
+            tar.extractall("data/")  # ✅ Extract correctly into 'data/MovieSummaries/'
+    
+    
     def __init__(self):
         """Initialize the class by checking for dataset and loading it."""
         self.data_dir = "data/MovieSummaries/"
@@ -91,21 +118,7 @@ class MovieAnalyzer:
             ],
         )
 
-    def download_and_extract(self):
-        """Download dataset if not present and extract it."""
-        url = "http://www.cs.cmu.edu/~ark/personas/data/MovieSummaries.tar.gz"
-        tar_path = os.path.join("data", "MovieSummaries.tar.gz")
 
-        if not os.path.exists(tar_path):
-            print("Downloading dataset...")
-            response = requests.get(url, stream=True)
-            with open(tar_path, "wb") as file:
-                for chunk in response.iter_content(chunk_size=1024):
-                    file.write(chunk)
-
-        print("Extracting dataset...")
-        with tarfile.open(tar_path, "r:gz") as tar:
-            tar.extractall("data/")  # ✅ Extract correctly into 'data/MovieSummaries/'
 
     def movie_type(self, N: int = 10) -> pd.DataFrame:
         """
@@ -126,14 +139,7 @@ class MovieAnalyzer:
         if not isinstance(N, int):
             raise ValueError("N must be an integer.")
 
-        # Convert stringified dictionaries into real Python dicts (handle errors safely)
-        def parse_genres(x):
-            try:
-                return ast.literal_eval(x) if isinstance(x, str) else {}
-            except (SyntaxError, ValueError):
-                return {}
-
-        self.movies_df["genres"] = self.movies_df["genres"].apply(parse_genres)
+        self.movies_df["genres"] = self.movies_df["genres"].apply(self.parse_genres)
 
         # Extract genre names
         all_genres = []
@@ -254,3 +260,55 @@ class MovieAnalyzer:
             st.pyplot(plt)
 
         return df[["actor_name", "actor_gender", "actor_height"]]
+    
+    def releases(self, genre: str = None) -> pd.DataFrame:
+        # Use static method to parse genres and form lists
+        self.movies_df["genres"] = self.movies_df["genres"].apply(self.parse_genres)
+        self.movies_df["genres"] = self.movies_df["genres"].apply(lambda x: list(x.values()))
+
+        # Extract year from "Release Date"
+        self.movies_df["release_year"] = pd.to_datetime(self.movies_df["release_date"], format="%Y-%m-%d", errors="coerce")
+        self.movies_df["release_year"] = self.movies_df["release_year"].dt.strftime("%Y")
+        # If no genre given, group movies directly
+        if genre == None:
+            releases_grouped = self.movies_df.groupby("release_year")
+
+        # if a genre is given, search for matched movies then group them
+        else:
+            releases_grouped = self.movies_df[self.movies_df["genres"].apply(lambda x: genre in x)].groupby("release_year")
+
+        releases = releases_grouped.size().reset_index()
+        releases_columns = {"release_year": "Release Year", 0: "Number of Movies"}
+
+        return releases.rename(columns=releases_columns)
+    
+    def ages(self, scale: str = "Y"):
+        if scale != "Y" and scale != "M":
+            scale = "Y"
+        
+        # Extract year and month from "actor_dob"
+        self.characters_df["actor_birth_year"] = pd.to_datetime(self.characters_df["actor_dob"], format="%Y-%m-%d", errors="coerce")
+        self.characters_df["actor_birth_year"] = self.characters_df["actor_birth_year"].dt.strftime("%Y")
+
+        self.characters_df["actor_birth_month"] = pd.to_datetime(self.characters_df["actor_dob"], format="%Y-%m-%d", errors="coerce")
+        self.characters_df["actor_birth_month"] = self.characters_df["actor_birth_month"].dt.strftime("%B")
+
+        # scale set to "Y"
+        if scale == "Y":
+            ages_grouped = self.characters_df.groupby("actor_birth_year")
+            ages = ages_grouped.size().reset_index()
+
+            ages.columns = ["Year", "Number of Births"]
+
+        # if scale set to "M"
+        if scale == "M":
+            month_order = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+            ages_grouped = self.characters_df.groupby("actor_birth_month")
+            ages = ages_grouped.size().reset_index()
+
+            ages["actor_birth_month"] = pd.Categorical(ages["actor_birth_month"], categories=month_order, ordered=True) 
+            ages.columns = ["Month", "Number of Births"]
+
+            ages = ages.sort_values("Month").reset_index(drop=True)
+
+        return ages
