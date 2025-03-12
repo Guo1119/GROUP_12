@@ -26,6 +26,10 @@ class MovieAnalyzer:
         default path for storing character.metadata.tsv extracted from zipped file.
     characters_df : pandas.DataFrame
         DataFrame of character data loaded fron 'character.metadata.tsv' 
+    random_movie_index: int
+        Index number of the random selected movie from method "randomize"
+    random_movie: pandas.Series
+        Information of the random selected movie from method "randomize"
 
     Methods
     -------
@@ -37,6 +41,12 @@ class MovieAnalyzer:
         Return a histogram of "number of actors" vs "movie counts". 
     actor_distributions(self, gender, max_height, min_height):
         Return an actor data in pandas.DataFrame under 3 given conditions or plot the distribution of filtered actorData.
+    releases(self, genre):
+        Return a DataFrame contains year and number of movies released in that year.
+    ages(self, scale):
+        Return a DataFrame contains year/month and number of actors born in that year/month.
+    randomize():
+        Randomly select a movie from dataset and store it to attributes
     """
 
     @staticmethod
@@ -263,6 +273,20 @@ class MovieAnalyzer:
         return df[["actor_name", "actor_gender", "actor_height"]]
     
     def releases(self, genre: str = None) -> pd.DataFrame:
+        """
+        Generate a pandas DataFrame showing how many movies are released every year, filtered to a specific genre, when 
+        a genre is selected.
+
+        Parameters
+        ----------
+        genre: str
+            Selected genre to be focused on
+
+        Returns
+        -------
+        pandas.DataFrame: Release year and number of movies released in that year
+
+        """
         # Use static method to parse genres and form lists
         self.movies_df["genres"] = self.movies_df["genres"].apply(self.parse_genres)
         self.movies_df["genres"] = self.movies_df["genres"].apply(lambda x: list(x.values()))
@@ -284,6 +308,20 @@ class MovieAnalyzer:
         return releases.rename(columns=releases_columns)
     
     def ages(self, scale: str = "Y"):
+        """
+        Generate a pandas DataFrame showing how many births each year or each month. Scale is controled by parameter 
+        "scale", by default set to "Y"
+
+        Parameters
+        ---------
+        scale: str
+            Set scale to "Y"(Year) or "M"(Month), any other input will be seen as "Y".
+
+        Returns
+        -------
+        pandas.DataFrame: Year/Month and number of births in that year/Month
+
+        """
         if scale != "Y" and scale != "M":
             scale = "Y"
         
@@ -315,6 +353,10 @@ class MovieAnalyzer:
         return ages
     
     def randomize(self):
+        """
+        Randomly select an entry from the dataset. The method does not return anything, instead the movie entry and its 
+        index are stored to respective attributes of class
+        """
         for x in ["languages", "countries", "genres"]:
             self.movies_df[x] = self.movies_df[x].apply(self.parse_genres)
             self.movies_df[x] = self.movies_df[x].apply(lambda x: list(x.values()))
