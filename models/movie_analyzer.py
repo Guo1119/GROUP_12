@@ -1,6 +1,7 @@
 import os
 import datetime as dt
 import pandas as pd
+import numpy as np
 import requests
 import tarfile
 import matplotlib.pyplot as plt
@@ -312,3 +313,16 @@ class MovieAnalyzer:
             ages = ages.sort_values("Month").reset_index(drop=True)
 
         return ages
+    
+    def randomize(self):
+        for x in ["languages", "countries", "genres"]:
+            self.movies_df[x] = self.movies_df[x].apply(self.parse_genres)
+            self.movies_df[x] = self.movies_df[x].apply(lambda x: list(x.values()))
+
+        self.movies_df["release_date"] = pd.to_datetime(self.movies_df["release_date"], format="%Y-%m-%d", errors="coerce").dt.date
+
+        self.movies_df.drop(columns=["wiki_movie_id","freebase_movie_id", "box_office", "runtime"], inplace=True)
+        self.movies_df.dropna(inplace=True)
+        
+        self.random_movie_index = np.random.randint(0, self.movies_df.shape[0])
+        self.random_movie = self.movies_df.iloc[self.random_movie_index]
