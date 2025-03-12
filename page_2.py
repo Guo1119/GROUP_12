@@ -13,7 +13,8 @@ st.title("CMU Movies Dataset")
 analyzer = MovieAnalyzer()
 
 st.header("Release Years", divider="red")
-genre_options = [None, 'Drama', 'Comedy', 'Romance Film', 'Black-and-white', 'Action', 'Thriller', 'Short Film', 'World cinema', 'Crime Fiction', 'Indie']
+genre_options = [None, 'Drama', 'Comedy', 'Romance Film', 'Black-and-white', 'Action', 'Thriller', 'Short Film', 
+                 'World cinema', 'Crime Fiction', 'Indie']
 selected_genre = st.selectbox(
     label="Select a genre",
     options=genre_options
