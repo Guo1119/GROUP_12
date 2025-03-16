@@ -11,7 +11,7 @@ A repository for 24/25 ADPRO's group project (Group 12)
   - The final part (2025/16/3) is stored on the main branch, please clone or pull the repository to your local machine.
   - Switch to the local folder of the program, Use command `pip install -r requirements.txt` to get necessary libraries.
   - One of the pages is based on library Ollama and need model "llama 3.2" to run, use command `ollama run llama3.2` to install it
-  - Run the program/website using the command "streamlit run main.py".
+  - Run the program/website using the command `streamlit run main.py`.
 
 **SPECIFICATION**
   - The program is built on Streamlit version 1.42.2.
