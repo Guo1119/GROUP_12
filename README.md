@@ -21,4 +21,5 @@ A repository for 24/25 ADPRO's group project (Group 12)
   - After completing these steps, you should be able to run main.py without any issues.
 
 **ABOUT THE TEXT CLASSIFICATION**
+
 We consider the text classification part of this project might help on SDG #9 Industry, Innovation and Infrastructure. The LLM shows a potential of functioning as intended with certain prompt. However, we find it is very hard to guarantee it generates proper format of text everytime it runs. If a large model is hold on cloud to complete this task, probably it will have higher accuracy. This project let us reflect on the potential of using large and mature LLM to complete certain automated tasks with outputs in a certain format, helping on the industrialization.
