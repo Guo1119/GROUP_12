@@ -14,10 +14,10 @@ A repository for 24/25 ADPRO's group project (Group 12)
   - Use command "pytest test_movie_analyzer.py" to test the error handlings requested in for the class.
   - "analyzer_legacy.py" and "datafetchtools_legacy.py" are legacy files used for building at first.
 
-  - The final part (2025/3/3) is stored on the `main` brench.
-  - Please clone or pull the repository to your end and use command "streamlit run main.py" to run the program/website.
-  - Also assure that streamlit  version 1.42.2 is installed in your terminal.
-  - To check do the following points:
-      - To check the version of streamlit enter "pip list" in the terminal by
-      - If its not installed as 1.42.2 enter "pip install --upgrade streamlit==1.42.2"
-  - After that you should never able to run main.py without any problems
+  - The final part (2025/3/3) is stored on the main branch.
+  - Please clone or pull the repository to your local machine and run the program/website using the command streamlit run main.py.
+  - Ensure that Streamlit version 1.42.2 is installed in your terminal.
+  - To verify, follow these steps:
+      - Check the installed Streamlit version by entering pip list in the terminal.
+      - If Streamlit 1.42.2 is not installed, run pip install --upgrade streamlit==1.42.2.
+  - After completing these steps, you should be able to run main.py without any issues.
